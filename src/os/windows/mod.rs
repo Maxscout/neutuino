@@ -1,3 +1,5 @@
+pub mod input;
+
 use std::io;
 
 unsafe extern "system" {

@@ -1,5 +1,5 @@
+use super::{STD_INPUT_HANDLE, get_std_handle};
 use crate::input::{Event, KeyEvent};
-use crate::os::{STD_INPUT_HANDLE, get_std_handle};
 
 use std::{io, mem, time::Duration};
 

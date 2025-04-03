@@ -2,19 +2,11 @@
 //!
 //! Very incomplete currently
 
-#[cfg(unix)]
-#[path = "unix_input.rs"]
-mod unix_input;
+use std::{io, time::Duration};
 
-#[cfg(unix)]
-pub use unix_input::*;
+use crate::{generate_os_function, os};
 
-#[cfg(windows)]
-#[path = "windows_input.rs"]
-mod windows_input;
-
-#[cfg(windows)]
-pub use windows_input::*;
+generate_os_function!(pub fn poll_input(timeout: Duration) -> io::Result<Event>, (os::unix::input::poll_input), (os::windows::input::poll_input));
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Event {

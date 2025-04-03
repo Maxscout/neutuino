@@ -1,10 +1,12 @@
 #![warn(clippy::all, clippy::pedantic)]
 
-use std::{time::Duration, io};
-use neutuino::ansi::{COLORS_BG, COLORS_FG, STYLE_BOLD, STYLE_ITALIC, STYLE_RESET, STYLE_UNDERLINE, move_cursor_to_column, set_window_title};
-use neutuino::os::{enable_ansi, get_terminal_size};
-use neutuino::input::{poll_input, Event, KeyEvent};
-
+use neutuino::ansi::{
+    COLORS_BG, COLORS_FG, STYLE_BOLD, STYLE_ITALIC, STYLE_RESET, STYLE_UNDERLINE,
+    move_cursor_to_column, set_window_title,
+};
+use neutuino::input::{Event, KeyEvent, poll_input};
+use neutuino::{enable_ansi, get_terminal_size};
+use std::{io, time::Duration};
 
 fn print_line_style_reset(string: &str) {
     println!("{}{}{}", string, STYLE_RESET, move_cursor_to_column(0));
@@ -12,7 +14,7 @@ fn print_line_style_reset(string: &str) {
 
 fn main() -> io::Result<()> {
     let all_styles = format!("{STYLE_BOLD}{STYLE_ITALIC}{STYLE_UNDERLINE}");
-    let _raw_terminal = neutuino::os::RawTerminal::new()?;
+    let _raw_terminal = neutuino::RawTerminal::new()?;
     enable_ansi()?;
 
     println!("q to quit{}", move_cursor_to_column(0));

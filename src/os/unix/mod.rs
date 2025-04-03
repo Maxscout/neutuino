@@ -1,3 +1,5 @@
+pub mod input;
+
 use std::ffi::{c_int, c_short, c_uint, c_ulong, c_ushort};
 use std::io;
 
