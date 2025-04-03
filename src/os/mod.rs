@@ -4,10 +4,10 @@
 //! Windows, Linux, and Mac, but are likely to work on more
 
 #[allow(unused)]
-pub mod unix;
+pub(crate) mod unix;
 
 #[allow(unused)]
-pub mod windows;
+pub(crate) mod windows;
 
 /// Generate a function to run code based on the os neutuino is being compiled for.
 ///
