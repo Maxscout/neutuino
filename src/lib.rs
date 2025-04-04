@@ -3,6 +3,8 @@
 use std::io;
 
 pub mod ansi;
+#[cfg(feature = "graphics-protocol")]
+pub mod graphics;
 pub mod input;
 pub mod os;
 

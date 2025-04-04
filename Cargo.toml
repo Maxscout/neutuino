@@ -4,3 +4,16 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+image = { version = "0.25.6", optional = true, default-features = false, features = [
+    "png",
+] }
+
+[features]
+default = ["graphics-protocol", "graphics-protocol-image"]
+graphics-protocol = []
+graphics-protocol-image = ["image"]
+
+[[example]]
+name = "graphics"
+path = "examples/graphics.rs"
+required-features = ["graphics-protocol"]
