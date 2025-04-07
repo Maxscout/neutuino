@@ -4,9 +4,9 @@
 
 use std::{io, time::Duration};
 
-use crate::{generate_os_function, os};
+use crate::os;
 
-generate_os_function!(pub fn poll_input(timeout: Duration) -> io::Result<Event>, (os::unix::input::poll_input), (os::windows::input::poll_input));
+pub use os::input::*;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Event {

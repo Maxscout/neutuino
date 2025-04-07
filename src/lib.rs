@@ -4,9 +4,6 @@ use std::io;
 
 pub mod ansi;
 pub mod input;
-pub mod os;
+pub(crate) mod os;
 
-generate_os_function!(pub fn enable_ansi() -> io::Result<()>);
-generate_os_function!(pub fn get_terminal_size() -> io::Result<(u16, u16)>);
-
-generate_os_struct!(pub struct RawTerminal);
+pub use os::*;
