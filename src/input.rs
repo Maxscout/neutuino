@@ -2,8 +2,6 @@
 //!
 //! Very incomplete currently
 
-use std::{io, time::Duration};
-
 use crate::os;
 
 pub use os::input::*;
