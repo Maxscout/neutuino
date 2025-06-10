@@ -64,7 +64,7 @@ fn make_raw(termios: &mut Termios) {
 pub mod os {
     use super::{STDIN_FILENO, STDOUT_FILENO, TIOCGWINSZ};
     use super::{Termios, Winsize};
-    use super::{get_attributes, set_attributes, make_raw, ioctl};
+    use super::{get_attributes, ioctl, make_raw, set_attributes};
     use std::io;
     use std::sync::LazyLock;
 

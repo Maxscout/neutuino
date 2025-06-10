@@ -22,10 +22,21 @@ const INVALID_HANDLE_VALUE: HANDLE = -1isize as HANDLE;
 
 #[repr(C)]
 #[derive(Default)]
+struct SmallRect {
+    tleftx: u16,
+    tlefty: u16,
+    brightx: u16,
+    brighty: u16,
+}
+
+#[repr(C)]
+#[derive(Default)]
 struct ConsoleScreenBufferInfo {
-    x: u16,
-    y: u16,
-    _unused: [u16; 9],
+    console_size: [u16; 2],
+    cursor_pos: [u16; 2],
+    attributes: u16,
+    console_window: SmallRect,
+    max_console_size: [u16; 2],
 }
 
 fn get_stdin_handle() -> io::Result<HANDLE> {
@@ -63,7 +74,10 @@ fn get_console_mode(handle: HANDLE, mode: &mut u32) -> io::Result<()> {
 }
 
 pub mod os {
-    use super::{GetConsoleScreenBufferInfo, ConsoleScreenBufferInfo, get_console_mode, get_stdin_handle, get_stdout_handle, set_console_mode};
+    use super::{
+        ConsoleScreenBufferInfo, GetConsoleScreenBufferInfo, get_console_mode, get_stdin_handle,
+        get_stdout_handle, set_console_mode,
+    };
     use super::{
         ENABLE_ECHO_INPUT, ENABLE_LINE_INPUT, ENABLE_PROCESSED_INPUT,
         ENABLE_VIRTUAL_TERMINAL_PROCESSING,
@@ -135,8 +149,8 @@ pub mod os {
         let handle = get_stdout_handle()?;
         let mut csbi = ConsoleScreenBufferInfo::default();
         if unsafe { GetConsoleScreenBufferInfo(handle, &mut csbi) != 0 } {
-            let width = csbi.x;
-            let height = csbi.y;
+            let width = csbi.console_size[0];
+            let height = csbi.console_size[1];
             return Ok((width, height));
         }
         Err(io::Error::last_os_error())
@@ -147,8 +161,8 @@ pub mod input {
     use super::get_stdin_handle;
     use crate::input::{Event, KeyEvent};
 
-    use std::{io, mem, time::Duration};
     use std::os::windows::raw::HANDLE;
+    use std::{io, mem, time::Duration};
 
     #[repr(C)]
     #[derive(Copy, Clone)]
@@ -278,7 +292,7 @@ pub mod input {
             _ => {
                 let c =
                     char::from_u32(u32::from(unsafe { event.u_char.unicode_char })).unwrap_or(' ');
-                if ctrl && c.is_ascii_alphabetic() {
+                if ctrl && c.is_alphabetic() {
                     KeyEvent::Ctrl(c)
                 } else {
                     KeyEvent::Char(c)
