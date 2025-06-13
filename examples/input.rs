@@ -1,8 +1,8 @@
 #![warn(clippy::all, clippy::pedantic)]
 
 use neutuino::prelude::*;
-use std::{io, time::Duration};
 use std::io::IsTerminal;
+use std::{io, time::Duration};
 
 fn print_line_style_reset(string: &str) {
     println!("{}{}{}", string, STYLE_RESET, move_cursor_to_column(0));
