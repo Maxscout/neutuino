@@ -136,7 +136,7 @@ pub mod os {
         Ok(())
     }
 
-    /// Gets the size of the terminal
+    /// Gets the size of the terminal in columns and rows
     ///
     /// Returns in (width, height) format
     ///
@@ -145,12 +145,35 @@ pub mod os {
     /// If there is no stdout,
     /// if stdout isn't a TTY, or
     /// if it fails to retrieve the terminal size
-    pub fn get_terminal_size() -> io::Result<(u16, u16)> {
+    pub fn get_terminal_size_col_row() -> io::Result<(u16, u16)> {
         let handle = get_stdout_handle()?;
         let mut csbi = ConsoleScreenBufferInfo::default();
         if unsafe { GetConsoleScreenBufferInfo(handle, &mut csbi) != 0 } {
             let width = csbi.console_size[0];
             let height = csbi.console_size[1];
+            return Ok((width, height));
+        }
+        Err(io::Error::last_os_error())
+    }
+
+    /// Gets the size of the terminal in pixels
+    ///
+    /// Returns in (width (x), height (y)) format
+    ///
+    /// # Errors
+    ///
+    /// If there is no stdout,
+    /// if stdout isn't a TTY, or
+    /// if it fails to retrieve the terminal size
+    pub fn get_terminal_size_pixels() -> io::Result<(u16, u16)> {
+        let handle = get_stdout_handle()?;
+        let mut csbi = ConsoleScreenBufferInfo::default();
+        if unsafe { GetConsoleScreenBufferInfo(handle, &mut csbi) != 0 } {
+            let window = csbi.console_window;
+
+            let width = window.brightx - window.tleftx;
+            let height = window.brighty - window.tlefty;
+
             return Ok((width, height));
         }
         Err(io::Error::last_os_error())

@@ -120,7 +120,7 @@ pub mod os {
         Ok(())
     }
 
-    /// Gets the size of the terminal
+    /// Gets the size of the terminal in columns and rows
     ///
     /// Returns in (width, height) format
     ///
@@ -129,13 +129,34 @@ pub mod os {
     /// If there is no stdout,
     /// if stdout isn't a TTY, or
     /// if it fails to retrieve the terminal size
-    pub fn get_terminal_size() -> io::Result<(u16, u16)> {
+    pub fn get_terminal_size_col_row() -> io::Result<(u16, u16)> {
         let mut winsize = Winsize::default();
         let ioctl_result =
             unsafe { ioctl(STDOUT_FILENO, TIOCGWINSZ, (&raw mut winsize).cast::<u8>()) };
 
         if ioctl_result == 0 {
             Ok((winsize.col, winsize.row))
+        } else {
+            Err(io::Error::last_os_error())
+        }
+    }
+
+    /// Gets the size of the terminal in pixels
+    ///
+    /// Returns in (width (x), height (y)) format
+    ///
+    /// # Errors
+    ///
+    /// If there is no stdout,
+    /// if stdout isn't a TTY, or
+    /// if it fails to retrieve the terminal size
+    pub fn get_terminal_size_pixels() -> io::Result<(u16, u16)> {
+        let mut winsize = Winsize::default();
+        let ioctl_result =
+            unsafe { ioctl(STDOUT_FILENO, TIOCGWINSZ, (&raw mut winsize).cast::<u8>()) };
+
+        if ioctl_result == 0 {
+            Ok((winsize.xpixel, winsize.ypixel))
         } else {
             Err(io::Error::last_os_error())
         }

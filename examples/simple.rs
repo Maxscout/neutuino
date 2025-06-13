@@ -16,7 +16,7 @@ fn main() -> io::Result<()> {
     let _alt_screen = AltScreenHandler::new()?;
 
     // gets the size of the terminal
-    let terminal_size = get_terminal_size()?;
+    let terminal_size = get_terminal_size_col_row()?;
     let middle = (terminal_size.0 / 2, terminal_size.1 / 2);
 
     let string = "Hello, World!";

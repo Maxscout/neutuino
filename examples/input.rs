@@ -19,7 +19,7 @@ fn main() -> io::Result<()> {
     println!("q to quit{}", move_cursor_to_column(0));
     let next = |x: usize| (x + 1) % COLORS_FG.len();
 
-    let terminal_size = get_terminal_size()?;
+    let terminal_size = get_terminal_size_pixels()?;
     let terminal_size_str = format!("{:?}", terminal_size);
     print!("{}", set_window_title(terminal_size_str).unwrap());
 
@@ -37,6 +37,11 @@ fn main() -> io::Result<()> {
             COLORS_FG[counter],
             COLORS_BG[next(counter)]
         ));
+
+        let terminal_size = get_terminal_size_pixels()?;
+        let terminal_size_str = format!("{:?}", terminal_size);
+        print!("{}", set_window_title(terminal_size_str).unwrap());
+
         // q to quit
         if input == Event::Key(KeyEvent::Char('q')) {
             break;
