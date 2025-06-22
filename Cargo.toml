@@ -7,3 +7,8 @@ description = "A minimal zero-dependancy pure-rust cross-platform TUI library"
 license = "MIT"
 keywords = ["tui", "cli", "input", "terminal", "color"]
 categories = ["command-line-interface"]
+
+[features]
+kitty = ["kitty-keyboard-handling", "kitty-graphics-protocol"]
+kitty-keyboard-handling = []
+kitty-graphics-protocol = []
