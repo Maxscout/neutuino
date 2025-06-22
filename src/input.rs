@@ -2,6 +2,8 @@
 //!
 //! Very incomplete currently
 
+pub use crate::os::input::*;
+
 /// Different events that can happen through the terminal
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Event {
@@ -61,9 +63,3 @@ impl From<KeyEvent> for Event {
         Self::Key(value)
     }
 }
-
-#[cfg(unix)]
-pub use crate::unix::input::*;
-
-#[cfg(windows)]
-pub use crate::windows::input::*;

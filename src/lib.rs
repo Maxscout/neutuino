@@ -17,12 +17,6 @@
 //! - [ ] Mouse input (Windows)
 //! - [ ] Feature completeness / API cleanup
 
-#[cfg(unix)]
-mod unix;
-
-#[cfg(windows)]
-mod windows;
-
 pub mod ansi;
 pub mod input;
 pub mod os;

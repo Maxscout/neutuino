@@ -5,10 +5,16 @@
 use std::io;
 
 #[cfg(unix)]
-pub use crate::unix::os::*;
+mod unix;
 
 #[cfg(windows)]
-pub use crate::windows::os::*;
+mod windows;
+
+#[cfg(unix)]
+pub use unix::*;
+
+#[cfg(windows)]
+pub use windows::*;
 
 /// Struct that calls `enable_raw_mode` on construction
 /// and `disable_raw_mode` on destruction
