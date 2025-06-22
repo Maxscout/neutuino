@@ -61,7 +61,7 @@ fn set_attributes(fd: c_int, termios: &mut Termios) -> io::Result<()> {
 
 fn make_raw(termios: &mut Termios) {
     cfmakeraw(termios);
-    termios.iflag |= !(ICRNL);
+    // termios.iflag |= !(ICRNL);
 }
 
 static TERMIOS: LazyLock<Option<Termios>> = LazyLock::new(|| {

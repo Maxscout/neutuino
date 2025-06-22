@@ -1,4 +1,4 @@
-use crate::input::{Event, KeyEvent};
+use crate::input::{Event, Key, KeyModifiers, KeyState};
 
 use super::{POLLIN, STDIN_FILENO};
 use std::ffi::{c_int, c_short, c_ulong, c_void};
@@ -81,14 +81,49 @@ where
     I: Iterator<Item = io::Result<u8>>,
 {
     match item {
-        b'\x1b' => try_parse_ansi_sequence(iter),
-        b'\n' | b'\r' => Ok(Event::Key(KeyEvent::Char('\n'))),
-        b'\t' => Ok(Event::Key(KeyEvent::Tab)),
-        b'\x7f' => Ok(Event::Key(KeyEvent::Backspace)),
-        b'\0' => Ok(Event::Key(KeyEvent::Null)),
-        c @ b'\x01'..=b'\x1a' => Ok(Event::Key(KeyEvent::Ctrl((c + 96) as char))),
-        c @ b'\x1c'..=b'\x1f' => Ok(Event::Key(KeyEvent::Ctrl((c + 24) as char))),
-        c => Ok(Event::Key(KeyEvent::Char(parse_utf8_char(c, iter)?))),
+        b'\n' => Ok(Event::KeyEvent {
+            key: Key::Char('j'),
+            modifiers: KeyModifiers::CTRL,
+            state: KeyState::Pressed,
+        }),
+        b'\r' => Ok(Event::KeyEvent {
+            key: Key::Char('\n'),
+            modifiers: KeyModifiers::NONE,
+            state: KeyState::Pressed,
+        }),
+        b'\t' => Ok(Event::KeyEvent {
+            key: Key::Tab,
+            modifiers: KeyModifiers::NONE,
+            state: KeyState::Pressed,
+        }),
+        b'\x7f' => Ok(Event::KeyEvent {
+            key: Key::Backspace,
+            modifiers: KeyModifiers::NONE,
+            state: KeyState::Pressed,
+        }),
+        b'\0' => Ok(Event::KeyEvent {
+            key: Key::Null,
+            modifiers: KeyModifiers::NONE,
+            state: KeyState::Pressed,
+        }),
+        c @ b'\x01'..=b'\x1f' => {
+            // ANSI escape code
+            if c == b'\x1b' {
+                return try_parse_ansi_sequence(iter);
+            }
+
+            // Every other control modifier
+            return Ok(Event::KeyEvent {
+                key: Key::Char((c + 96) as char),
+                modifiers: KeyModifiers::CTRL,
+                state: KeyState::Pressed,
+            });
+        }
+        c => Ok(Event::KeyEvent {
+            key: Key::Char(parse_utf8_char(c, iter)?),
+            modifiers: KeyModifiers::NONE,
+            state: KeyState::Pressed,
+        }),
     }
 }
 
@@ -115,7 +150,11 @@ where
     let error = io::Error::other("Could not parse event");
     match iter.next() {
         Some(Ok(b'O')) => match iter.next() {
-            Some(Ok(val @ b'P'..=b's')) => Ok(Event::Key(KeyEvent::F(1 + val - b'P'))),
+            Some(Ok(val @ b'P'..=b's')) => Ok(Event::KeyEvent {
+                key: Key::F(1 + val - b'P'),
+                modifiers: KeyModifiers::NONE,
+                state: KeyState::Pressed,
+            }),
             _ => Err(error),
         },
         Some(Ok(b'[')) => try_parse_csi_sequence(iter).ok_or(error),
@@ -129,16 +168,48 @@ where
 {
     match iter.next() {
         Some(Ok(b'[')) => match iter.next() {
-            Some(Ok(val @ b'A'..=b'E')) => Some(Event::Key(KeyEvent::F(1 + val - b'A'))),
+            Some(Ok(val @ b'A'..=b'E')) => Some(Event::KeyEvent {
+                key: Key::F(1 + val - b'A'),
+                modifiers: KeyModifiers::NONE,
+                state: KeyState::Pressed,
+            }),
             _ => None,
         },
-        Some(Ok(b'D')) => Some(Event::Key(KeyEvent::Left)),
-        Some(Ok(b'C')) => Some(Event::Key(KeyEvent::Right)),
-        Some(Ok(b'A')) => Some(Event::Key(KeyEvent::Up)),
-        Some(Ok(b'B')) => Some(Event::Key(KeyEvent::Down)),
-        Some(Ok(b'H')) => Some(Event::Key(KeyEvent::Home)),
-        Some(Ok(b'F')) => Some(Event::Key(KeyEvent::End)),
-        Some(Ok(b'Z')) => Some(Event::Key(KeyEvent::ShiftTab)),
+        Some(Ok(b'D')) => Some(Event::KeyEvent {
+            key: Key::Left,
+            modifiers: KeyModifiers::NONE,
+            state: KeyState::Pressed,
+        }),
+        Some(Ok(b'C')) => Some(Event::KeyEvent {
+            key: Key::Right,
+            modifiers: KeyModifiers::NONE,
+            state: KeyState::Pressed,
+        }),
+        Some(Ok(b'A')) => Some(Event::KeyEvent {
+            key: Key::Up,
+            modifiers: KeyModifiers::NONE,
+            state: KeyState::Pressed,
+        }),
+        Some(Ok(b'B')) => Some(Event::KeyEvent {
+            key: Key::Down,
+            modifiers: KeyModifiers::NONE,
+            state: KeyState::Pressed,
+        }),
+        Some(Ok(b'H')) => Some(Event::KeyEvent {
+            key: Key::Home,
+            modifiers: KeyModifiers::NONE,
+            state: KeyState::Pressed,
+        }),
+        Some(Ok(b'F')) => Some(Event::KeyEvent {
+            key: Key::End,
+            modifiers: KeyModifiers::NONE,
+            state: KeyState::Pressed,
+        }),
+        Some(Ok(b'Z')) => Some(Event::KeyEvent {
+            key: Key::Tab,
+            modifiers: KeyModifiers::SHIFT,
+            state: KeyState::Pressed,
+        }),
         _ => None,
     }
 }
